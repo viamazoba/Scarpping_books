@@ -46,11 +46,28 @@ class webScraping_book():
     def obtain_genres(self):
         # Se obtiene la etiqueta '<ul>' con todos los géneros
         genres = self._driver.find_element(By.XPATH, '//*[@id="default"]/div/div/div/aside/div[2]/ul/li/ul')
-        # Se obtienen todos los elementos de la etiqueta '<ul>'
+        # Se obtienen todos los elementos <li> de la etiqueta '<ul>'
         genres_tags = genres.find_elements(By.TAG_NAME,'li')
+        # Obtienes todos los elementos '<a>'
+        genres_ref = genres.find_elements(By.TAG_NAME, 'a')
+        # Obtienes el atributo 'href' de las etiquetas '<a>' para ir a los diferentes géneros
+        genres_ref_list = [i.get_attribute("href") for i in genres_ref]
         # Se obtiene el texto de las etiquetas
         genres_list = [element.text for element in genres_tags]
-        return genres_list
+        return genres_list,genres_ref_list
+    
+    def click_selected_genre(self):
+        # Aquí vas a tomar la referencia del género seleccionado
+        x = 'http://books.toscrape.com/catalogue/category/books/mystery_3/index.html'
+        #element = self._driver.find_element(By.XPATH, "//a[@href='{}']".format(x))
+        #element.click()
+        
+        # Aquí abres una nueva ventana con la referencia que obtuviste
+        self._driver.execute_script("window.open('{}');".format(x))
+        # Obtienes las pestañas abiertas
+        tabs = self._driver.window_handles
+        # Seleccionas la nueva ventana abierta para trabajar
+        self._driver.switch_to.window(tabs[-1])
     
 
 if __name__ == "__main__":
@@ -60,4 +77,8 @@ if __name__ == "__main__":
     library = webScraping_book(url)
     library.cargar_page()
     print('resultados :',library.obtain_results())
-    print(library.obtain_genres())
+    #print(library.obtain_genres())
+    generos , referencias = library.obtain_genres()
+    print(referencias)
+    #library.click_selected_genre() 
+    #print('resultados nuevos:',library.obtain_results())
