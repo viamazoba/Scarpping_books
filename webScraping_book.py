@@ -40,8 +40,17 @@ class webScraping_book():
         
         # En caso de cargar el navegador, lo llevas a una variable y luego le envías el producto a buscar
         result= self._driver.find_element(By.XPATH, '//*[@id="default"]/div/div/div/div/form/strong[1]')
-        numResult = result.get_attribute('strong')
-        print(numResult)
+        # retornas la cantidad de resultados de la página
+        return result.text
+
+    def obtain_genres(self):
+        # Se obtiene la etiqueta '<ul>' con todos los géneros
+        genres = self._driver.find_element(By.XPATH, '//*[@id="default"]/div/div/div/aside/div[2]/ul/li/ul')
+        # Se obtienen todos los elementos de la etiqueta '<ul>'
+        genres_tags = genres.find_elements(By.TAG_NAME,'li')
+        # Se obtiene el texto de las etiquetas
+        genres_list = [element.text for element in genres_tags]
+        return genres_list
     
 
 if __name__ == "__main__":
@@ -50,4 +59,5 @@ if __name__ == "__main__":
     url = 'http://books.toscrape.com/'
     library = webScraping_book(url)
     library.cargar_page()
-    library.obtain_results()
+    print('resultados :',library.obtain_results())
+    print(library.obtain_genres())
