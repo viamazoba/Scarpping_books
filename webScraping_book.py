@@ -18,6 +18,12 @@ class webScraping_book():
         options.add_experimental_option("detach", True)
         self._driver = webdriver.Chrome(options=options,service=ChromeService(ChromeDriverManager().install())) # Inicias el navegador
         self._url = url
+
+        # Las listas siguientes serviran para alamacenar la información de los libros
+        self._titles = []
+        self._prices = []
+        self._stars = []
+        self._states = []
     
      # En el siguiente método cargas la página web
     def cargar_page(self):
@@ -69,6 +75,33 @@ class webScraping_book():
         # Seleccionas la nueva ventana abierta para trabajar
         self._driver.switch_to.window(tabs[-1])
     
+    def obtain_info_books(self):
+        # Se obtienen todos los artículos visibles en la página
+        articles = self._driver.find_elements(By.TAG_NAME, 'article')
+        tag_star = articles[0].find_element(By.CLASS_NAME, 'star-rating')
+        #title = tag_principal_title.find_element(By.TAG_NAME, 'a')
+        print(tag_star.get_attribute('class').split(' ')[1])
+        
+
+        for book in articles:
+            # A continuación se debe buscar dentro de las etiquetas h3 las etiquetas a
+            # las cuales tienen en un atributo el título completo de los libros
+            tag_principal_title = book.find_element(By.TAG_NAME, 'h3')
+            title = tag_principal_title.find_element(By.TAG_NAME, 'a')
+
+            # A continuación se hace algo similar para obtener el rating de los libros
+            tag_star = book.find_element(By.CLASS_NAME, 'star-rating')
+
+            self._titles.append(title.get_attribute('title'))
+            self._prices.append(book.text.split('\n')[1])
+            self._stars.append(tag_star.get_attribute('class').split(' ')[1])
+            self._states.append(book.text.split('\n')[2])
+
+        print(self._titles[0])
+        print(self._prices[0])
+        print(self._stars[0])
+        print(self._states[0])
+    
 
 if __name__ == "__main__":
 
@@ -79,6 +112,7 @@ if __name__ == "__main__":
     print('resultados :',library.obtain_results())
     #print(library.obtain_genres())
     generos , referencias = library.obtain_genres()
-    print(referencias)
+    #print(referencias)
+    library.obtain_info_books()
     #library.click_selected_genre() 
     #print('resultados nuevos:',library.obtain_results())
