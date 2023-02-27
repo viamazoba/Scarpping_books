@@ -5,6 +5,7 @@ from tkinter import messagebox
 from tkinter import font
 from tkinter import filedialog
 import tkinter as tk
+from idlelib.tooltip import Hovertip
 
 
 if __name__ == "__main__":
@@ -47,7 +48,10 @@ if __name__ == "__main__":
     VarDescription= StringVar(value= 'No')
     VarEncargo= StringVar()
     VarEncargo.set("10010019030") # Por defecto se deja con el número de cuenta de Coninsa
-    VarTipoPago= StringVar()
+    VarCheckButton= IntVar(value= 0)
+    VarDownloadAll = IntVar(value= 0)
+    VarWatchProcess = IntVar(value= 0)
+
     VarConceptoContable= StringVar()
 
 
@@ -62,7 +66,7 @@ if __name__ == "__main__":
     
     style = ttk.Style()
     #style.configure('Custom.TCombobox', fieldbackground= 'red')
-    style.configure('Custom.TCombobox', fieldbackground=backgroudCombobox, padding=(10, 5, 10, 5), height=3, arrowcolor=colorTexto)
+    style.configure('Custom.TCombobox', fieldbackground=backgroudCombobox, padding=(8, 5, 8, 5), height=3, arrowcolor=colorTexto)
 
     style.map('TCombobox', fieldbackground=[('readonly', backgroudCombobox)])
 
@@ -98,24 +102,112 @@ if __name__ == "__main__":
     
     # ------------------------- Cantidad de elementos encontrados ---------------------------------------------------------------------------------
 
-    labelnumberBooks= Label(myframe, text="number of category's books:",bg= white, font= styleTexto_especial, fg=colorTexto)
-    labelnumberBooks.place(x=70,y=120) # Posicionándo label
+    labelnumberBooks= Label(myframe, text="found books:",bg= white, font= styleTexto_especial, fg=colorTexto)
+    labelnumberBooks.place(x=140,y=110) # Posicionándo label
 
     labelnumberBooks2= Label(myframe, text="1000",bg= '#fefffe', font= styleTexto_especial, fg=colorTexto)
-    labelnumberBooks2.place(x=320,y=122) # Posicionándo label  
+    labelnumberBooks2.place(x=265,y=112) # Posicionándo label  
     
     
     
     # --------------------- Descripción del libro -----------------------------------------------------------
 
-    labelDescription= Label(myframe, text="Download description?:",bg= white, font= styleTexto_h2, fg=colorTexto)
-    labelDescription.place(x=70,y=170) # Posicionándo label 
+    labelDescription= Label(myframe, text="Download description?:",bg= white, font= styleTexto_especial, fg=colorTexto)
+    labelDescription.place(x=48,y=140) # Posicionándo label 
     
     descriptionOpcionOne = Radiobutton(myframe, text="Yes", variable=VarDescription, value="Yes", background= white, font= styleTexto_h3, highlightthickness=0)
-    descriptionOpcionOne.place(x=300, y=172)
+    descriptionOpcionOne.place(x=260, y=142)
     descriptionOpcionTwo = Radiobutton(myframe, text="No", variable=VarDescription, value="No", background= white, font= styleTexto_h3, highlightthickness= 0)
-    descriptionOpcionTwo.place(x=350, y=172)
+    descriptionOpcionTwo.place(x=310, y=142)
 
+    # ------------------------------ Opciones avanzadas -----------------------------------------------------------------------------
+
+    
+    def downloadAllBooks():
+        pass
+
+
+    def watchAllProcess():
+        pass
+    
+    def advancedField():
+
+        if VarCheckButton.get()==1:
+            
+            global xActual, yActual
+            
+            coordinates = root.geometry()
+            xActual, yActual = coordinates.split("+")[1:]
+            h1 = 400
+            root.geometry("%dx%d+%d+%d" % (w, h1, int(xActual), int(yActual)))
+            #myframe.config(height=700)
+            botonAceptar.place(y=320)
+            botonCancelar.place(y=320)
+
+            downloadAll.place(x=270,y=230)
+            watchProcess.place(x=150,y=230)
+
+            separadorElementosEnd.place(rely=0.90)
+            descriptionOpcionOne.config(state= 'disabled')
+            descriptionOpcionTwo.config(state= 'disabled')
+
+            #separadorElementos.place(rely=0.13)
+        
+
+        else:
+            coordinates = root.geometry()
+            #xActual2, yActual2 = coordinates.split("+")[1:]
+            h1 = 300
+            root.geometry("%dx%d+%d+%d" % (w, h1, int(xActual), int(yActual)))
+            #h = 300
+            camposIngresados= False
+            #VarRubro.set("")
+            #VarRecurso.set("")
+            #VarArea.set("")
+            root.geometry("%dx%d+%d+%d" % (w, h, x, y))
+            myframe.config(height=600)
+            botonAceptar.place(y=240)
+            botonCancelar.place(y=240)
+
+            descriptionOpcionTwo.config(state= 'normal')
+            descriptionOpcionOne.config(state= 'normal')
+            
+            
+            watchProcess.place_forget()
+            downloadAll.place_forget()
+            
+    
+    
+    advancedOption= Checkbutton(myframe,text="Advanced options", font=styleTexto_h3, fg=colorTexto,variable=VarCheckButton, highlightthickness=0, bg= white, command=lambda: advancedField())
+    advancedOption.place(x=265,y=180)
+
+    separadorElementosEnd= ttk.Separator(myframe,name="separadorEnd", orient="horizontal") # Separador del logo con los campos a ingresar
+    separadorElementosEnd.place(relx=0.17, rely=0.71,relheight=0.01, relwidth=0.65) # rely=0.554
+
+
+    downloadAll= Checkbutton(myframe,text="Download all", font=styleTexto_h3, fg=colorTexto,variable=VarDownloadAll, highlightthickness=0, bg= white, compound="left", command=lambda: downloadAllBooks())
+    myTipDownloadAll = Hovertip(downloadAll, 'Download all books in the web site')
+
+    watchProcess= Checkbutton(myframe,text="Watch process", font=styleTexto_h3, fg=colorTexto,variable=VarWatchProcess, highlightthickness=0, bg= white, compound="left",command=lambda: watchAllProcess())
+    myTipWatchProcess = Hovertip(watchProcess, 'Select only if you want to watch how \nthe program download the information')
+
+
+    # --------------------------------- botones de aceptar y cancelar -------------------------------------------------------------------------
+
+    def validacionVaribales():
+        pass
+    
+    def cancelarOperacion():
+        root.quit()
+    
+    botonAceptar= Button(myframe,text="Accept", width=15,font=styleTexto_h3, bg=colorAceptar, fg=white, bd=0.8, activebackground=colorAceptarClick, activeforeground="#F3F2ED", command=lambda:validacionVaribales())
+
+    botonAceptar.place(x=265,y=240)
+
+
+    botonCancelar=Button(myframe,text="Cancel", width=15,font= styleTexto_h3, bg=colorCancelar, fg=white, bd=0.8, activebackground=colorCancelarClick, activeforeground="#F3F2ED", command=lambda:cancelarOperacion())
+
+    botonCancelar.place(x=105,y=240)
 
 
     root.mainloop() # Fin de la ventana
