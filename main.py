@@ -124,7 +124,13 @@ if __name__ == "__main__":
 
     
     def downloadAllBooks():
-        pass
+
+        if VarDownloadAll.get() == 1:
+            descriptionOpcionOne.config(state= 'disabled')
+            descriptionOpcionTwo.config(state= 'disabled')
+        else:
+            descriptionOpcionTwo.config(state= 'normal')
+            descriptionOpcionOne.config(state= 'normal')
 
 
     def watchAllProcess():
@@ -138,18 +144,19 @@ if __name__ == "__main__":
             
             coordinates = root.geometry()
             xActual, yActual = coordinates.split("+")[1:]
-            h1 = 400
+            h1 = 350
             root.geometry("%dx%d+%d+%d" % (w, h1, int(xActual), int(yActual)))
             #myframe.config(height=700)
-            botonAceptar.place(y=320)
-            botonCancelar.place(y=320)
+            botonAceptar.place(y=280)
+            botonCancelar.place(y=280)
 
-            downloadAll.place(x=270,y=230)
-            watchProcess.place(x=150,y=230)
+            downloadAll.place(x=270,y=225)
+            watchProcess.place(x=150,y=225)
 
-            separadorElementosEnd.place(rely=0.90)
-            descriptionOpcionOne.config(state= 'disabled')
-            descriptionOpcionTwo.config(state= 'disabled')
+            separadorElementos.place(relx=0.08, rely=0.128,relheight=0.01, relwidth=0.85)
+            #separadorElementosEnd.place(relx=0.17, rely=0.50,relheight=0.01, relwidth=0.65) # rely=0.554
+            separadorElementosEnd.place(rely=0.725)
+            
 
             #separadorElementos.place(rely=0.13)
         
@@ -169,8 +176,9 @@ if __name__ == "__main__":
             botonAceptar.place(y=240)
             botonCancelar.place(y=240)
 
-            descriptionOpcionTwo.config(state= 'normal')
-            descriptionOpcionOne.config(state= 'normal')
+            separadorElementos.place(relx=0.08, rely=0.15,relheight=0.01, relwidth=0.85)
+            separadorElementosEnd.place(relx=0.17, rely=0.74,relheight=0.01, relwidth=0.65) # rely=0.554
+            
             
             
             watchProcess.place_forget()
@@ -182,7 +190,7 @@ if __name__ == "__main__":
     advancedOption.place(x=265,y=180)
 
     separadorElementosEnd= ttk.Separator(myframe,name="separadorEnd", orient="horizontal") # Separador del logo con los campos a ingresar
-    separadorElementosEnd.place(relx=0.17, rely=0.71,relheight=0.01, relwidth=0.65) # rely=0.554
+    separadorElementosEnd.place(relx=0.17, rely=0.74,relheight=0.01, relwidth=0.65) # rely=0.554
 
 
     downloadAll= Checkbutton(myframe,text="Download all", font=styleTexto_h3, fg=colorTexto,variable=VarDownloadAll, highlightthickness=0, bg= white, compound="left", command=lambda: downloadAllBooks())
