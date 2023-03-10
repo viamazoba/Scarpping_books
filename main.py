@@ -61,6 +61,53 @@ if __name__ == "__main__":
     myframe= Frame(root,width=500, height=600, bg= white) # Frame de la aplicación
     myframe.pack()
 
+    def instruction():
+        # Crear una instancia de Toplevel()
+        window = tk.Toplevel(bg= white)
+        anchor = 410
+        heigth = 330
+        w = window.winfo_screenwidth()
+        h = window.winfo_screenheight()
+        x = (w/2) - (anchor/2)
+        y = (h/2) - (heigth/2)
+
+        #root.geometry('+%d+%d' % (x, y)) ## this part allows you to only change the location
+        window.geometry("%dx%d+%d+%d" % (anchor, heigth, x, y))
+        window.title("Readme")
+        #window.geometry("300x200")
+
+        # Crear una etiqueta con un mensaje
+        message = """This application is used to download 
+    information from books that are    
+    on the website books.toscrape.com,
+    where the title, rating, availability, 
+    and price of books from the chosen 
+    category will be downloaded, and the 
+    option to download their respective 
+    description is also given.
+        \nIn the advanced options, it is 
+    possible to download all the books 
+    on the website,and the option 
+    to view the entire download 
+    process can be set.
+        \nThe output of this application 
+    is an xlsx file with the 
+    obtained information."""
+        label = tk.Label(window, text=message, justify= 'center', font= styleTexto_h3, bg= white)
+        label.pack(pady=15)
+
+        # Crear un botón para cerrar la ventana
+        button = tk.Button(window, text="Close", command=window.destroy, font= styleTexto_h3, bg= '#456990', fg= white, width= 10, activebackground='#114b5f', activeforeground= white)
+        button.pack()
+
+    def info():
+        pass
+
+    menubar = tk.Menu(root)
+    menubar.add_command(label="Instructions", command=instruction, font= styleTexto_h3)
+    menubar.add_command(label="About", command=info , font= styleTexto_h3)
+
+    root.config(menu = menubar)
     
     #------------------------------------------ Estilo personalizado para el comboBox -------------------------------------------------------------------------------
     
@@ -194,7 +241,7 @@ if __name__ == "__main__":
 
 
     downloadAll= Checkbutton(myframe,text="Download all", font=styleTexto_h3, fg=colorTexto,variable=VarDownloadAll, highlightthickness=0, bg= white, compound="left", command=lambda: downloadAllBooks())
-    myTipDownloadAll = Hovertip(downloadAll, 'Download all books in the web site')
+    myTipDownloadAll = Hovertip(downloadAll, 'Download the information \nfor all the books')
 
     watchProcess= Checkbutton(myframe,text="Watch process", font=styleTexto_h3, fg=colorTexto,variable=VarWatchProcess, highlightthickness=0, bg= white, compound="left",command=lambda: watchAllProcess())
     myTipWatchProcess = Hovertip(watchProcess, 'Select only if you want to watch how \nthe program download the information')
@@ -208,12 +255,12 @@ if __name__ == "__main__":
     def cancelarOperacion():
         root.quit()
     
-    botonAceptar= Button(myframe,text="Accept", width=15,font=styleTexto_h3, bg=colorAceptar, fg=white, bd=0.8, activebackground=colorAceptarClick, activeforeground="#F3F2ED", command=lambda:validacionVaribales())
+    botonAceptar= Button(myframe,text="Accept", width=15,font=styleTexto_h3, bg=colorAceptar, fg=white, bd=0.8, activebackground=colorAceptarClick, activeforeground= white, command=lambda:validacionVaribales())
 
     botonAceptar.place(x=265,y=240)
 
 
-    botonCancelar=Button(myframe,text="Cancel", width=15,font= styleTexto_h3, bg=colorCancelar, fg=white, bd=0.8, activebackground=colorCancelarClick, activeforeground="#F3F2ED", command=lambda:cancelarOperacion())
+    botonCancelar=Button(myframe,text="Cancel", width=15,font= styleTexto_h3, bg=colorCancelar, fg=white, bd=0.8, activebackground=colorCancelarClick, activeforeground=white, command=lambda:cancelarOperacion())
 
     botonCancelar.place(x=105,y=240)
 
