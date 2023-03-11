@@ -6,6 +6,27 @@ from tkinter import font
 from tkinter import filedialog
 import tkinter as tk
 from idlelib.tooltip import Hovertip
+from webScraping_book import webScraping_book
+
+
+# --------- Se obtienen las categorias y la cantidad de líbros en cada una ------------------------
+
+pageToScrape = webScraping_book('http://books.toscrape.com/', True)
+pageToScrape.load_page()
+
+
+categories , url_categories = pageToScrape.obtain_genres()
+category_books = []
+
+for url in url_categories:
+    pageToScrape.openNewTab(url)
+    category_books.append(pageToScrape.obtain_results())
+    pageToScrape.closeNewTab()
+
+categories_dictionary = dict(zip(categories,category_books))
+pageToScrape.close_web()
+
+
 
 
 if __name__ == "__main__":
@@ -46,6 +67,7 @@ if __name__ == "__main__":
     # ------------------------------------------ A continuación se definen las variables utilizadas dentro de la interfaz gráfica ---------------------------------
     VarCategory=StringVar()
     VarDescription= StringVar(value= 'No')
+    VarNumBooks = StringVar(value= category_books[0])
     VarEncargo= StringVar()
     VarEncargo.set("10010019030") # Por defecto se deja con el número de cuenta de Coninsa
     VarCheckButton= IntVar(value= 0)
@@ -129,19 +151,21 @@ if __name__ == "__main__":
     labelCategoria.place(x=70,y=75) # Posicionándo label 
 
 
-    optionsTipoPago=["Transferencia Electronica", "Cheque gerencia - Recoger en oficina banco",
-                 "Traslado entre encargos", "Traslado entre cuenta y encargo",
-                 "Efectivo - Recoger en oficina banco","Cheque - Recoger en Alianza"]
-
-    comboboxCategoria= ttk.Combobox(myframe,values=optionsTipoPago, state="readonly", textvariable=VarCategory, style='Custom.TCombobox') # state= disabled para bloquear campo, state="readonly" para que el campo no sea editable (no se pueda escribir en el)
+    comboboxCategoria= ttk.Combobox(myframe,values=categories, state="readonly", textvariable=VarCategory, style='Custom.TCombobox') # state= disabled para bloquear campo, state="readonly" para que el campo no sea editable (no se pueda escribir en el)
     comboboxCategoria.config(width=23,height=30, font= styleTexto_h3)
     comboboxCategoria.current(0) # Poner elemento por default
     #tipoDePago.configure()
 
-    # Cambiar el color de fondo del elemento seleccionado
+    # Cambiar el color de fondo del elemento seleccionado y varias dinámicamente el valor del label referente a la cantidad de libros en la categoría
     def on_select(event):
         comboboxCategoria.configure(style='Custom.TCombobox')
         comboboxCategoria.selection_clear()
+
+        selected_option = comboboxCategoria.get()
+        VarNumBooks.set(categories_dictionary[selected_option])
+
+        labelnumberBooks2.config(text= VarNumBooks.get())
+
 
     comboboxCategoria.bind('<<ComboboxSelected>>', on_select)
     comboboxCategoria.place(x=265, y=75)
@@ -152,7 +176,7 @@ if __name__ == "__main__":
     labelnumberBooks= Label(myframe, text="found books:",bg= white, font= styleTexto_especial, fg=colorTexto)
     labelnumberBooks.place(x=140,y=110) # Posicionándo label
 
-    labelnumberBooks2= Label(myframe, text="1000",bg= '#fefffe', font= styleTexto_especial, fg=colorTexto)
+    labelnumberBooks2= Label(myframe, text=VarNumBooks.get() ,bg= '#fefffe', font= styleTexto_especial, fg=colorTexto)
     labelnumberBooks2.place(x=265,y=112) # Posicionándo label  
     
     

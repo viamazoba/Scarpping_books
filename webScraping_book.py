@@ -13,9 +13,14 @@ from bs4 import BeautifulSoup
 class webScraping_book():
 
      # La siguiente función hereda la clase para manejar el navegador, observa que instalas el driver en la RAM
-    def __init__(self, url):
+    def __init__(self, url, background = False):
         options = webdriver.ChromeOptions()
         options.add_experimental_option("detach", True)
+
+        # La siguiente opción permite la ejecución en segundo plano de la aplicación
+        if background:
+            options.add_argument("--headless")
+
         self._driver = webdriver.Chrome(options=options,service=ChromeService(ChromeDriverManager().install())) # Inicias el navegador
         self._url = url
 
@@ -27,12 +32,12 @@ class webScraping_book():
         self._description = []
     
      # En el siguiente método cargas la página web
-    def cargar_page(self):
+    def load_page(self):
         driver = self._driver # No es necesario hacer esto, pero te resume código
-        url_market = str(self._url) # Así no te presenta problemas para colocar el string
+        # url_market = str(self._url) # Así no te presenta problemas para colocar el string
         driver.implicitly_wait(10) # Esperas 10 segundos (mientras carga el navegador)
         driver.maximize_window() # Maximizas la ventana del navegador 
-        driver.get(url_market) # Vas a la página web que deseas
+        driver.get(self._url) # Vas a la página web que deseas
 
     
     def obtain_results(self):
@@ -63,19 +68,24 @@ class webScraping_book():
         genres_list = [element.text for element in genres_tags]
         return genres_list,genres_ref_list
     
-    def click_selected_genre(self):
+    def openNewTab(self, url_to_visit):
         # Aquí vas a tomar la referencia del género seleccionado
-        x = 'http://books.toscrape.com/catalogue/category/books/mystery_3/index.html'
         #element = self._driver.find_element(By.XPATH, "//a[@href='{}']".format(x))
         #element.click()
         
         # Aquí abres una nueva ventana con la referencia que obtuviste
-        self._driver.execute_script("window.open('{}');".format(x))
+        self._driver.execute_script("window.open('{}');".format(url_to_visit))
         # Obtienes las pestañas abiertas
         tabs = self._driver.window_handles
         # Seleccionas la nueva ventana abierta para trabajar
         self._driver.switch_to.window(tabs[-1])
+    
+    def closeNewTab(self):
 
+        # Se cierra la ventana
+        self._driver.close()
+        # Regresamos a la ventana anterior (ventana principal)
+        self._driver.switch_to.window(self._driver.window_handles[0])
     
      
     """El método a continuación obtiene la descripción del libro al entregarle la dirección a su HTML"""
@@ -91,16 +101,13 @@ class webScraping_book():
         product = self._driver.find_elements(By.TAG_NAME, 'article')
         tag_description = product[0].find_element(By.XPATH, '//*[@id="content_inner"]/article/p')
         description = tag_description.text
-        print(description) 
-
-        # Se cierra la ventana
-        self._driver.close()
-        # Regresamos a la ventana anterior (ventana principal)
-        self._driver.switch_to.window(self._driver.window_handles[0])
-
-
-
+        
         return description 
+
+        # # Se cierra la ventana
+        # self._driver.close()
+        # # Regresamos a la ventana anterior (ventana principal)
+        # self._driver.switch_to.window(self._driver.window_handles[0])
 
     
     def obtain_info_books(self):
@@ -151,16 +158,19 @@ class webScraping_book():
 if __name__ == "__main__":
 
     # Estos son los parámetros que has configurado para la página por el momento
-    url = 'http://books.toscrape.com/'
-    library = webScraping_book(url)
-    library.cargar_page()
-    print('resultados :',library.obtain_results())
-    #print(library.obtain_genres())
-    generos , referencias = library.obtain_genres()
-    #print(referencias)
-    library.obtain_info_books()
-    library.next_page()
-    library.close_web()
+    # url = 'http://books.toscrape.com/'
+    # library = webScraping_book(url)
+    # library.load_page()
+    # print('resultados página principal:',library.obtain_results())
+    # print(library.obtain_genres())
+    # generos , referencias = library.obtain_genres()
+    # library.openNewTab(referencias[0])
+    # print('Resultados ', generos[0], ": ", library.obtain_results())
+    # library.closeNewTab()
+    # #print(referencias)
+    # # library.obtain_info_books()
+    # # library.next_page()
+    # library.close_web()
     #library.click_selected_genre() 
     #print('resultados nuevos:',library.obtain_results())
 
