@@ -110,7 +110,7 @@ class webScraping_book():
         # self._driver.switch_to.window(self._driver.window_handles[0])
 
     
-    def obtain_info_books(self):
+    def obtain_info_books(self, bool_description):
         # Se obtienen todos los artículos visibles en la página
         articles = self._driver.find_elements(By.TAG_NAME, 'article')
 
@@ -127,19 +127,22 @@ class webScraping_book():
             tag_principal_title = book.find_element(By.TAG_NAME, 'h3')
             title = tag_principal_title.find_element(By.TAG_NAME, 'a')
 
-            # Se toma la dirección del HTML del libro, esto para obtener la descripción del mismo
-            html_book = title.get_attribute('href')
-            self._description.append(self.book_description(html_book))
             # A continuación se hace algo similar para obtener el rating de los libros
             tag_star = book.find_element(By.CLASS_NAME, 'star-rating')
 
             self._titles.append(title.get_attribute('title'))
             self._prices.append(book.text.split('\n')[1])
             self._stars.append(tag_star.get_attribute('class').split(' ')[1])
-            self._states.append(book.text.split('\n')[2]) 
+            self._states.append(book.text.split('\n')[2])
+
+            # Se toma la dirección del HTML del libro, esto para obtener la descripción del mismo
+            if bool_description:
+                html_book = title.get_attribute('href')
+                self._description.append(self.book_description(html_book))
 
     
-    """En el siguiente método se le da click() a next para pasar a la siguiente página"""
+    """En el siguiente método se le da click() a next para pasar a la siguiente página
+        Si realizó un click (existe el botón next) entonces retorna un true, de lo contrario un false"""
     def next_page(self):
 
         elements = self._driver.find_elements(By.CLASS_NAME, 'next')
@@ -147,6 +150,12 @@ class webScraping_book():
         if elements:
             next_button = elements[0].find_element(By.TAG_NAME, 'a')
             next_button.click()
+
+            return True
+        
+        return False
+        
+
 
     """Cierras el browser"""
     def close_web(self):

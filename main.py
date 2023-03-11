@@ -17,6 +17,7 @@ pageToScrape.load_page()
 
 categories , url_categories = pageToScrape.obtain_genres()
 category_books = []
+booksTitle = []
 
 for url in url_categories:
     pageToScrape.openNewTab(url)
@@ -24,7 +25,36 @@ for url in url_categories:
     pageToScrape.closeNewTab()
 
 categories_dictionary = dict(zip(categories,category_books))
+categoriesDictionary_url = dict(zip(categories, url_categories))
 pageToScrape.close_web()
+
+def dowload_information(category):
+    # definir variable para genero
+    # definir variable para mostrar o no el proceso de descarga
+    pageBooks = webScraping_book('http://books.toscrape.com/', False)
+    pageBooks.load_page()
+    pageBooks.openNewTab(categoriesDictionary_url[category])
+    print('Esta es la categoria y su respectiva Url')
+    print(category,categoriesDictionary_url[category] )
+    repeatProcess = True
+
+    # Esta es la variable boolena para descargar la descripción de los libros
+    bool_description = False
+
+    while repeatProcess:
+        pageBooks.obtain_info_books(bool_description)
+        repeatProcess = pageBooks.next_page()
+        if  not repeatProcess:
+            break;
+
+    pageBooks.closeNewTab()
+    pageBooks.close_web()
+
+    booksTitle = pageBooks._titles
+
+    print(booksTitle)
+
+
 
 
 
@@ -273,13 +303,13 @@ if __name__ == "__main__":
 
     # --------------------------------- botones de aceptar y cancelar -------------------------------------------------------------------------
 
-    def validacionVaribales():
-        pass
+    # def validacionVaribales():
+    #     pass
     
     def cancelarOperacion():
         root.quit()
     
-    botonAceptar= Button(myframe,text="Accept", width=15,font=styleTexto_h3, bg=colorAceptar, fg=white, bd=0.8, activebackground=colorAceptarClick, activeforeground= white, command=lambda:validacionVaribales())
+    botonAceptar= Button(myframe,text="Accept", width=15,font=styleTexto_h3, bg=colorAceptar, fg=white, bd=0.8, activebackground=colorAceptarClick, activeforeground= white, command=lambda:dowload_information(VarCategory.get()))
 
     botonAceptar.place(x=265,y=240)
 
