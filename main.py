@@ -31,11 +31,10 @@ pageToScrape.close_web()
 def dowload_information(category):
     # definir variable para genero
     # definir variable para mostrar o no el proceso de descarga
+    # definir variable para descargar descripción
     pageBooks = webScraping_book('http://books.toscrape.com/', False)
     pageBooks.load_page()
     pageBooks.openNewTab(categoriesDictionary_url[category])
-    print('Esta es la categoria y su respectiva Url')
-    print(category,categoriesDictionary_url[category] )
     repeatProcess = True
 
     # Esta es la variable boolena para descargar la descripción de los libros
@@ -50,12 +49,28 @@ def dowload_information(category):
     pageBooks.closeNewTab()
     pageBooks.close_web()
 
-    booksTitle = pageBooks._titles
-
-    print(booksTitle)
+    create_file(pageBooks._titles, pageBooks._prices, pageBooks._stars, pageBooks._states, pageBooks._description)
 
 
+def create_file(titles, prices, stars, states, description):
 
+    with open('info_books.txt', 'w') as file:
+
+        if description:
+            line = 'titles|prices|stars|states|description' + '\n'
+        else:
+            line = 'titles|prices|stars|states' + '\n'
+        
+        #file.write(line)
+
+        for position in range(0, len(titles)):
+            if description:
+                line += titles[position]+'|' + prices[position] +'|'+ stars[position]+'|' + states[position]+'|' + description[position] + '\n'
+            else:
+
+                line += titles[position]+'|' + prices[position] +'|'+ stars[position]+'|' + states[position] + '\n'
+            
+        file.write(line)
 
 
 
