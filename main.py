@@ -8,6 +8,7 @@ import tkinter as tk
 from idlelib.tooltip import Hovertip
 from webScraping_book import webScraping_book
 import multiprocessing
+import time
 
 
 # --------- Se obtienen las categorias y la cantidad de líbros en cada una ------------------------
@@ -94,6 +95,7 @@ if __name__ == "__main__":
     colorCancelar="#A52636" # #d92037
     colorAceptarClick="#007D59"
     colorCancelarClick= "#701722"
+    dark_blue = '#456990'
     #styleTexto=("Draft A Extra Bold",11)
     styleTexto_h1=("Arial",14, 'bold')
     styleTexto_h2=("Arial",12, 'bold')
@@ -103,27 +105,62 @@ if __name__ == "__main__":
     
     # ----------------------------------------------------------- Barra inicial de carga información --------------------------------------------------
 
-    def load_bar(categories):
-        #global categoriesDictionary_url, categories_dictionary
+    def load_bar():
+
+        start_time = time.time()
+
         window = tk.Tk()
-        window.title("Barra de carga")
+        window.title("Collecting information")
+        window.resizable(0,0) # Para bloquear dimensiones
+
+        # Dimensiones del frame
+        w = 400
+        h = 200
+
+        # Dimensiones de la pantalla
+        ws = window.winfo_screenwidth()
+        hs = window.winfo_screenheight()
+        x = (ws/2) - (w/2)
+        y = (hs/2) - (h/2)
+
+        # root.geometry('+%d+%d' % (x, y)) ## this part allows you to only change the location
+        window.geometry("%dx%d+%d+%d" % (w, h, x, y))
+        window.config(background= white)
+
+
+        # Se crea label para la ventana de actualización
+        update_text = Label(window, text="Collecting initial information for the \nsystem, please wait 35 seconds.",bg= white, font= styleTexto_especial, fg=colorTexto)
+        update_text.place(x = 30, y = 50)
+
+        style = ttk.Style()
+        style.configure("red.Horizontal.TProgressbar", foreground = dark_blue, troughcolor = '#e5e1e0')
 
         # Crear barra de progreso
-        progress_bar = ttk.Progressbar(window, orient="horizontal", length=300, mode="indeterminate")
-        progress_bar.pack(pady=10)
-        progress_bar.start()
+        progress_bar = ttk.Progressbar(window, style= "red.Horizontal.TProgressbar",orient="horizontal", length=250, mode="indeterminate")
+        progress_bar.place(x=78, y= 120)
+        progress_bar.start(17)
 
-
+        
         def close_window():
             window.destroy()
 
-        window.after(36000, close_window)
+        
+        def on_closing():
+            pass
+        
+        def update_time():
+            end_time = time.time()
+            time_donwload = int(35-(end_time-start_time))
+            message = "Collecting initial information for the \nsystem, please wait {} seconds.".format(time_donwload)
+            update_text.config(text= message)
 
-        if categories:
-            print('Funcionó la barra')
-            print('Las categorias son: ', categories)
-            window.destroy
-        # Mostrar ventana
+            window.after(1000, update_time)
+
+
+        window.after(36000, close_window)
+        window.after(1000, update_time)
+        window.protocol("WM_DELETE_WINDOW", on_closing)
+
         window.mainloop()
 
 
@@ -133,7 +170,7 @@ if __name__ == "__main__":
     url_categories = manager.list()
     category_books = manager.list()
     #queue = multiprocessing.Queue()
-    p2 = multiprocessing.Process(target=load_bar, args=(categories,))
+    p2 = multiprocessing.Process(target=load_bar)
     p1 = multiprocessing.Process(target=start_info, args=(categories,url_categories, category_books,))
     p1.start()
     p2.start()
