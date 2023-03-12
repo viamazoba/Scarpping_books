@@ -7,32 +7,41 @@ from tkinter import filedialog
 import tkinter as tk
 from idlelib.tooltip import Hovertip
 from webScraping_book import webScraping_book
+import multiprocessing
 
 
 # --------- Se obtienen las categorias y la cantidad de líbros en cada una ------------------------
 
-pageToScrape = webScraping_book('http://books.toscrape.com/', True)
-pageToScrape.load_page()
+
+def start_info(categories,url_categories, category_books):
+    #global categories, url_categories, category_books
+    category_book = []
+    pageToScrape = webScraping_book('http://books.toscrape.com/', True)
+    pageToScrape.load_page()
 
 
-categories , url_categories = pageToScrape.obtain_genres()
-category_books = []
-booksTitle = []
+    category , url_category = pageToScrape.obtain_genres()
+    categories.extend(category) # No debes reemplazar la lista creada con multiprocessing
+    url_categories.extend(url_category)
 
-for url in url_categories:
-    pageToScrape.openNewTab(url)
-    category_books.append(pageToScrape.obtain_results())
-    pageToScrape.closeNewTab()
+    for url in url_category:
+        pageToScrape.openNewTab(url)
+        category_book.append(pageToScrape.obtain_results())
+        pageToScrape.closeNewTab()
+    
+    category_books.extend(category_book)
 
-categories_dictionary = dict(zip(categories,category_books))
-categoriesDictionary_url = dict(zip(categories, url_categories))
-pageToScrape.close_web()
+    pageToScrape.close_web()
+
+    #queue.put(categories, url_categories, category_books)
+
+
 
 def dowload_information(category):
     # definir variable para genero
     # definir variable para mostrar o no el proceso de descarga
     # definir variable para descargar descripción
-    pageBooks = webScraping_book('http://books.toscrape.com/', False)
+    pageBooks = webScraping_book('http://books.toscrape.com/', True)
     pageBooks.load_page()
     pageBooks.openNewTab(categoriesDictionary_url[category])
     repeatProcess = True
@@ -61,7 +70,6 @@ def create_file(titles, prices, stars, states, description):
         else:
             line = 'titles|prices|stars|states' + '\n'
         
-        #file.write(line)
 
         for position in range(0, len(titles)):
             if description:
@@ -75,6 +83,7 @@ def create_file(titles, prices, stars, states, description):
 
 
 if __name__ == "__main__":
+
 
     # --------------------------- Definiéndo los colores del UI ------------------------
     white = '#F3F2ED'
@@ -91,6 +100,56 @@ if __name__ == "__main__":
     styleTexto_h3=("Arial",10, 'bold')
     styleTexto_especial=("Arial",11, 'bold')
 
+    
+    # ----------------------------------------------------------- Barra inicial de carga información --------------------------------------------------
+
+    def load_bar(categories):
+        #global categoriesDictionary_url, categories_dictionary
+        window = tk.Tk()
+        window.title("Barra de carga")
+
+        # Crear barra de progreso
+        progress_bar = ttk.Progressbar(window, orient="horizontal", length=300, mode="indeterminate")
+        progress_bar.pack(pady=10)
+        progress_bar.start()
+
+
+        def close_window():
+            window.destroy()
+
+        window.after(36000, close_window)
+
+        if categories:
+            print('Funcionó la barra')
+            print('Las categorias son: ', categories)
+            window.destroy
+        # Mostrar ventana
+        window.mainloop()
+
+
+    
+    manager = multiprocessing.Manager()
+    categories = manager.list()
+    url_categories = manager.list()
+    category_books = manager.list()
+    #queue = multiprocessing.Queue()
+    p2 = multiprocessing.Process(target=load_bar, args=(categories,))
+    p1 = multiprocessing.Process(target=start_info, args=(categories,url_categories, category_books,))
+    p1.start()
+    p2.start()
+    p1.join()
+    p2.join()
+    
+
+    categories = list(categories)
+    url_categories = list(url_categories)
+    category_books = list(category_books)
+
+    categories_dictionary = dict(zip(categories,category_books))
+    categoriesDictionary_url = dict(zip(categories, url_categories))
+
+        
+    # -------------------------------- Ventana principal para la descarga de la información ------------------------------------------------------------
     root= Tk() # Inicio de la ventana
     root.title("Book Scrapping") # Título de la ventana
     root.resizable(0,0) # Para bloquear dimensiones
