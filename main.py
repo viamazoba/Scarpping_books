@@ -13,6 +13,17 @@ import time
 
 # --------- Se obtienen las categorias y la cantidad de líbros en cada una ------------------------
 
+def start_info_numberOfBooks(urls, list_numBooks):
+    pageToScrape = webScraping_book('http://books.toscrape.com/', True)
+    pageToScrape.load_page()
+
+    for url in urls:
+        pageToScrape.openNewTab(url)
+        list_numBooks.append(pageToScrape.obtain_results())
+        pageToScrape.closeNewTab()
+
+    pageToScrape.close_web()    
+
 
 def start_info(categories,url_categories, category_books):
     #global categories, url_categories, category_books
@@ -25,16 +36,41 @@ def start_info(categories,url_categories, category_books):
     categories.extend(category) # No debes reemplazar la lista creada con multiprocessing
     url_categories.extend(url_category)
 
-    for url in url_category:
-        pageToScrape.openNewTab(url)
-        category_book.append(pageToScrape.obtain_results())
-        pageToScrape.closeNewTab()
-    
-    category_books.extend(category_book)
-
     pageToScrape.close_web()
+    
+    manager = multiprocessing.Manager()
+    first_part = manager.list()
+    second_part = manager.list()
+    third_part = manager.list()
+    fourth_part = manager.list()
 
-    #queue.put(categories, url_categories, category_books)
+    process_list = []
+
+    process_0 = multiprocessing.Process(target= start_info_numberOfBooks, args=(url_categories[0:10], first_part,))
+    process_list.append(process_0)
+    process_1 = multiprocessing.Process(target= start_info_numberOfBooks, args=(url_categories[10:20], second_part,))
+    process_list.append(process_1)
+    process_2 = multiprocessing.Process(target= start_info_numberOfBooks, args=(url_categories[20:30], third_part,))
+    process_list.append(process_2)
+    process_3 = multiprocessing.Process(target= start_info_numberOfBooks, args=(url_categories[30:], fourth_part,))
+    process_list.append(process_3)
+
+    for process in process_list:
+        process.start()
+    
+    for process in process_list:
+        process.join()
+
+
+    first_part = list(first_part)
+    second_part = list(second_part)
+    third_part = list(third_part)
+    fourth_part = list(fourth_part)
+
+    category_books.extend(first_part + second_part + third_part+ fourth_part)
+
+
+
 
 
 
@@ -129,7 +165,7 @@ if __name__ == "__main__":
 
 
         # Se crea label para la ventana de actualización
-        update_text = Label(window, text="Collecting initial information for the \nsystem, please wait 35 seconds.",bg= white, font= styleTexto_especial, fg=colorTexto)
+        update_text = Label(window, text="Collecting initial information for the \nsystem, please wait 13 seconds.",bg= white, font= styleTexto_especial, fg=colorTexto)
         update_text.place(x = 30, y = 50)
 
         style = ttk.Style()
@@ -150,26 +186,26 @@ if __name__ == "__main__":
         
         def update_time():
             end_time = time.time()
-            time_donwload = int(35-(end_time-start_time))
+            time_donwload = int(13-(end_time-start_time))
             message = "Collecting initial information for the \nsystem, please wait {} seconds.".format(time_donwload)
             update_text.config(text= message)
 
             window.after(1000, update_time)
 
 
-        window.after(36000, close_window)
+        window.after(13000, close_window)
         window.after(1000, update_time)
         window.protocol("WM_DELETE_WINDOW", on_closing)
 
         window.mainloop()
 
 
-    
+        
     manager = multiprocessing.Manager()
     categories = manager.list()
     url_categories = manager.list()
     category_books = manager.list()
-    #queue = multiprocessing.Queue()
+
     p2 = multiprocessing.Process(target=load_bar)
     p1 = multiprocessing.Process(target=start_info, args=(categories,url_categories, category_books,))
     p1.start()
@@ -201,7 +237,6 @@ if __name__ == "__main__":
     x = (ws/2) - (w/2)
     y = (hs/2) - (h/2)
 
-    #root.geometry('+%d+%d' % (x, y)) ## this part allows you to only change the location
     root.geometry("%dx%d+%d+%d" % (w, h, x, y))
 
 
@@ -234,10 +269,8 @@ if __name__ == "__main__":
         x = (w/2) - (anchor/2)
         y = (h/2) - (heigth/2)
 
-        #root.geometry('+%d+%d' % (x, y)) ## this part allows you to only change the location
         window.geometry("%dx%d+%d+%d" % (anchor, heigth, x, y))
         window.title("Readme")
-        #window.geometry("300x200")
 
         # Crear una etiqueta con un mensaje
         message = """This application is used to download 
@@ -375,14 +408,10 @@ if __name__ == "__main__":
 
         else:
             coordinates = root.geometry()
-            #xActual2, yActual2 = coordinates.split("+")[1:]
             h1 = 300
             root.geometry("%dx%d+%d+%d" % (w, h1, int(xActual), int(yActual)))
-            #h = 300
+
             camposIngresados= False
-            #VarRubro.set("")
-            #VarRecurso.set("")
-            #VarArea.set("")
             root.geometry("%dx%d+%d+%d" % (w, h, x, y))
             myframe.config(height=600)
             botonAceptar.place(y=240)
