@@ -74,17 +74,21 @@ def start_info(categories,url_categories, category_books):
 
 
 
-def dowload_information(category):
-    # definir variable para genero
-    # definir variable para mostrar o no el proceso de descarga
+def dowload_information(category, Dictionary_url, watch_process, bool_description):
+
     # definir variable para descargar descripción
-    pageBooks = webScraping_book('http://books.toscrape.com/', True)
+    messagebox.showinfo(title='Information',message='The download process will begin, and upon completion, an alert message will be displayed.')
+
+    no_watch = True
+    if watch_process == 1:
+        no_watch = False
+
+    
+    pageBooks = webScraping_book('http://books.toscrape.com/', no_watch)
     pageBooks.load_page()
-    pageBooks.openNewTab(categoriesDictionary_url[category])
+    pageBooks.openNewTab(Dictionary_url[category])
     repeatProcess = True
 
-    # Esta es la variable boolena para descargar la descripción de los libros
-    bool_description = False
 
     while repeatProcess:
         pageBooks.obtain_info_books(bool_description)
@@ -96,6 +100,7 @@ def dowload_information(category):
     pageBooks.close_web()
 
     create_file(pageBooks._titles, pageBooks._prices, pageBooks._stars, pageBooks._states, pageBooks._description)
+    messagebox.showinfo('Information','The download process has been successfully completed, and the information has been recorded in info_books.txt.')
 
 
 def create_file(titles, prices, stars, states, description):
@@ -227,6 +232,8 @@ if __name__ == "__main__":
     root.title("Book Scrapping") # Título de la ventana
     root.resizable(0,0) # Para bloquear dimensiones
 
+    # Se establece la configuración de los dialogos informativos
+    root.option_add('*Dialog.msg.font', 'Airal 10 bold')
     # Dimensiones del frame
     w = 500
     h = 300
@@ -242,7 +249,7 @@ if __name__ == "__main__":
 
     # ------------------------------------------ A continuación se definen las variables utilizadas dentro de la interfaz gráfica ---------------------------------
     VarCategory=StringVar()
-    VarDescription= StringVar(value= 'No')
+    VarDescription= BooleanVar(value= False)
     VarNumBooks = StringVar(value= category_books[0])
     VarEncargo= StringVar()
     VarEncargo.set("10010019030") # Por defecto se deja con el número de cuenta de Coninsa
@@ -360,9 +367,9 @@ if __name__ == "__main__":
     labelDescription= Label(myframe, text="Download description?:",bg= white, font= styleTexto_especial, fg=colorTexto)
     labelDescription.place(x=48,y=140) # Posicionándo label 
     
-    descriptionOpcionOne = Radiobutton(myframe, text="Yes", variable=VarDescription, value="Yes", background= white, font= styleTexto_h3, highlightthickness=0)
+    descriptionOpcionOne = Radiobutton(myframe, text="Yes", variable=VarDescription, value=True, background= white, font= styleTexto_h3, highlightthickness=0)
     descriptionOpcionOne.place(x=260, y=142)
-    descriptionOpcionTwo = Radiobutton(myframe, text="No", variable=VarDescription, value="No", background= white, font= styleTexto_h3, highlightthickness= 0)
+    descriptionOpcionTwo = Radiobutton(myframe, text="No", variable=VarDescription, value=False, background= white, font= styleTexto_h3, highlightthickness= 0)
     descriptionOpcionTwo.place(x=310, y=142)
 
     # ------------------------------ Opciones avanzadas -----------------------------------------------------------------------------
@@ -449,7 +456,7 @@ if __name__ == "__main__":
     def cancelarOperacion():
         root.quit()
     
-    botonAceptar= Button(myframe,text="Accept", width=15,font=styleTexto_h3, bg=colorAceptar, fg=white, bd=0.8, activebackground=colorAceptarClick, activeforeground= white, command=lambda:dowload_information(VarCategory.get()))
+    botonAceptar= Button(myframe,text="Accept", width=15,font=styleTexto_h3, bg=colorAceptar, fg=white, bd=0.8, activebackground=colorAceptarClick, activeforeground= white, command=lambda:dowload_information(VarCategory.get(), categoriesDictionary_url,VarWatchProcess.get(), VarDescription.get()))
 
     botonAceptar.place(x=265,y=240)
 

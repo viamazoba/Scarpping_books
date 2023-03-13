@@ -13,7 +13,7 @@ from bs4 import BeautifulSoup
 class webScraping_book():
 
      # La siguiente función hereda la clase para manejar el navegador, observa que instalas el driver en la RAM
-    def __init__(self, url, background = False):
+    def __init__(self, url, background):
         options = webdriver.ChromeOptions()
         options.add_experimental_option("detach", True)
 
@@ -101,6 +101,11 @@ class webScraping_book():
         product = self._driver.find_elements(By.TAG_NAME, 'article')
         tag_description = product[0].find_element(By.XPATH, '//*[@id="content_inner"]/article/p')
         description = tag_description.text
+
+        # Se cierra la ventana
+        self._driver.close()
+        # Regresamos a la ventana anterior (ventana principal)
+        self._driver.switch_to.window(self._driver.window_handles[-1])
         
         return description 
 
@@ -118,7 +123,7 @@ class webScraping_book():
         # Las siguientes líneas hasta el print las puedes borrar si no vas hacer más pruebas
         tag_star = articles[0].find_element(By.CLASS_NAME, 'star-rating')
         #title = tag_principal_title.find_element(By.TAG_NAME, 'a')
-        print(tag_star.get_attribute('class').split(' ')[1])
+        #print(tag_star.get_attribute('class').split(' ')[1])
         
 
         for book in articles:
