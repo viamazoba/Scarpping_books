@@ -74,7 +74,7 @@ def start_info(categories,url_categories, category_books):
 
 
 
-def dowload_information(category, Dictionary_url, watch_process, bool_description):
+def dowload_information(category, Dictionary_url, watch_process, bool_description, bool_AllInformation):
 
     # definir variable para descargar descripción
     messagebox.showinfo(title='Information',message='The download process will begin, and upon completion, an alert message will be displayed.')
@@ -91,7 +91,7 @@ def dowload_information(category, Dictionary_url, watch_process, bool_descriptio
 
 
     while repeatProcess:
-        pageBooks.obtain_info_books(bool_description)
+        pageBooks.obtain_info_books(bool_description, bool_AllInformation)
         repeatProcess = pageBooks.next_page()
         if  not repeatProcess:
             break;
@@ -99,26 +99,32 @@ def dowload_information(category, Dictionary_url, watch_process, bool_descriptio
     pageBooks.closeNewTab()
     pageBooks.close_web()
 
-    create_file(pageBooks._titles, pageBooks._prices, pageBooks._stars, pageBooks._states, pageBooks._description)
+    create_file(pageBooks._titles, pageBooks._prices, pageBooks._stars, pageBooks._states, pageBooks._description, pageBooks._ups, pageBooks._availability)
     messagebox.showinfo('Information','The download process has been successfully completed, and the information has been recorded in info_books.txt.')
 
 
-def create_file(titles, prices, stars, states, description):
+def create_file(titles, prices, stars, states, description, ups, availability):
 
     with open('info_books.txt', 'w') as file:
 
-        if description:
+        if description and ups:
+            line = 'titles|prices|stars|states|description|ups|availability' + '\n'
+        elif description:
             line = 'titles|prices|stars|states|description' + '\n'
         else:
             line = 'titles|prices|stars|states' + '\n'
         
 
         for position in range(0, len(titles)):
-            if description:
-                line += titles[position]+'|' + prices[position] +'|'+ stars[position]+'|' + states[position]+'|' + description[position] + '\n'
-            else:
+            if description and ups:
+                line += titles[position]+'|' + prices[position] +'|'+ stars[position]+'|' + states[position]+'|' + description[position] +'|'+ ups[position] +'|'+ availability[position] +'\n'
+            
+            elif description:
+                line += titles[position]+'|' + prices[position] +'|'+ stars[position]+'|' + states[position] +'|' + description[position]+ '\n'
 
+            else:
                 line += titles[position]+'|' + prices[position] +'|'+ stars[position]+'|' + states[position] + '\n'
+
             
         file.write(line)
 
@@ -250,6 +256,7 @@ if __name__ == "__main__":
     # ------------------------------------------ A continuación se definen las variables utilizadas dentro de la interfaz gráfica ---------------------------------
     VarCategory=StringVar()
     VarDescription= BooleanVar(value= False)
+    VarAllInfo = BooleanVar(value= False)
     VarNumBooks = StringVar(value= category_books[0])
     VarEncargo= StringVar()
     VarEncargo.set("10010019030") # Por defecto se deja con el número de cuenta de Coninsa
@@ -380,7 +387,10 @@ if __name__ == "__main__":
         if VarDownloadAll.get() == 1:
             descriptionOpcionOne.config(state= 'disabled')
             descriptionOpcionTwo.config(state= 'disabled')
+            VarAllInfo.set(True)
+            VarDescription.set(False)
         else:
+            VarAllInfo.set(False)
             descriptionOpcionTwo.config(state= 'normal')
             descriptionOpcionOne.config(state= 'normal')
 
@@ -456,7 +466,7 @@ if __name__ == "__main__":
     def cancelarOperacion():
         root.quit()
     
-    botonAceptar= Button(myframe,text="Accept", width=15,font=styleTexto_h3, bg=colorAceptar, fg=white, bd=0.8, activebackground=colorAceptarClick, activeforeground= white, command=lambda:dowload_information(VarCategory.get(), categoriesDictionary_url,VarWatchProcess.get(), VarDescription.get()))
+    botonAceptar= Button(myframe,text="Accept", width=15,font=styleTexto_h3, bg=colorAceptar, fg=white, bd=0.8, activebackground=colorAceptarClick, activeforeground= white, command=lambda:dowload_information(VarCategory.get(), categoriesDictionary_url,VarWatchProcess.get(), VarDescription.get(), VarAllInfo.get()))
 
     botonAceptar.place(x=265,y=240)
 

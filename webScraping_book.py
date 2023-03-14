@@ -30,6 +30,8 @@ class webScraping_book():
         self._stars = []
         self._states = []
         self._description = []
+        self._ups = []
+        self._availability = []
     
      # En el siguiente método cargas la página web
     def load_page(self):
@@ -108,14 +110,37 @@ class webScraping_book():
         self._driver.switch_to.window(self._driver.window_handles[-1])
         
         return description 
+    
+    def book_Availability_upc(self,url):
 
-        # # Se cierra la ventana
-        # self._driver.close()
-        # # Regresamos a la ventana anterior (ventana principal)
-        # self._driver.switch_to.window(self._driver.window_handles[0])
+        # Aquí abres una nueva ventana con la referencia que obtuviste
+        self._driver.execute_script("window.open('{}');".format(url))
+        # Obtienes las pestañas abiertas
+        tabs = self._driver.window_handles
+        # Seleccionas la nueva ventana abierta para trabajar
+        self._driver.switch_to.window(tabs[-1])
+
+        # Se extrae la descripción del libro
+        product = self._driver.find_elements(By.TAG_NAME, 'article')
+        tag_description = product[0].find_element(By.XPATH, '//*[@id="content_inner"]/article/p')
+        description = tag_description.text
+
+        # Se extraen la UPC y los libros disponibles
+        elements = self._driver.find_elements(By.TAG_NAME, 'td')
+        upc = elements[0].text
+        avaiability = elements[5].text
+
+        # Se cierra la ventana
+        self._driver.close()
+        # Regresamos a la ventana anterior (ventana principal)
+        self._driver.switch_to.window(self._driver.window_handles[-1])
+        
+        return description, upc, avaiability
+
+
 
     
-    def obtain_info_books(self, bool_description):
+    def obtain_info_books(self, bool_description, bool_allInformation = False):
         # Se obtienen todos los artículos visibles en la página
         articles = self._driver.find_elements(By.TAG_NAME, 'article')
 
@@ -144,6 +169,14 @@ class webScraping_book():
             if bool_description:
                 html_book = title.get_attribute('href')
                 self._description.append(self.book_description(html_book))
+            
+            if bool_allInformation:
+                html_book = title.get_attribute('href')
+                description,upc, availability =  self.book_Availability_upc(html_book)
+
+                self._description.append(description)
+                self._ups.append(upc)
+                self._availability.append(availability)                
 
     
     """En el siguiente método se le da click() a next para pasar a la siguiente página
