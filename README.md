@@ -4,18 +4,21 @@ This is a desktop application that uses a graphical interface to perform web scr
 
 This project provides a brief demonstration of the things that can be done through web scraping for information gathering, as well as automation of web processes.
 
-## Images
-<img src="./images/carga_info.png" alt="Texto alternativo" width="200"/>
-<img src="./images/principal_screen_1.png" alt="Texto alternativo" width="200"/>
-<img src="./images/principal_screen_2.png" alt="Texto alternativo" width="200"/>
-<img src="./images/instructions.png" alt="Texto alternativo" width="200"/>
-
-
 ## Libraries used
+These are the main libraries used for this project:
 
 * Selenium
 * Tkinter
 * Multiprocessing
+
+For more details, please refer to the requirements.txt document.
+
+## Images
+<img src="./images/carga_info.png" alt="Texto alternativo" width="400"/>
+<img src="./images/principal_screen_1.png" alt="Texto alternativo" width="400"/>
+<img src="./images/principal_screen_2.png" alt="Texto alternativo" width="400"/>
+<img src="./images/instructions.png" alt="Texto alternativo" width="400"/>
+
 
 ## Installation
 To use this project, you need to have Python 3 installed on your system. We recommend creating a virtual environment for the project and installing the required libraries using the requirements.txt file provided.
