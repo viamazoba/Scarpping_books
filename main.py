@@ -295,13 +295,14 @@ if __name__ == "__main__":
     category will be downloaded, and the 
     option to download their respective 
     description is also given.
-        \nIn the advanced options, it is 
-    possible to download all the books 
-    on the website,and the option 
-    to view the entire download 
-    process can be set.
+        \nIn advanced options, it is possible 
+    to download additional information 
+    about the books such as: Quantity 
+    of available books and their 
+    respective ups,and the option to view 
+    the entire download process can be set.
         \nThe output of this application 
-    is an xlsx file with the 
+    is an txt file with the 
     obtained information."""
         label = tk.Label(window, text=message, justify= 'center', font= styleTexto_h3, bg= white)
         label.pack(pady=15)
@@ -315,8 +316,7 @@ if __name__ == "__main__":
 
     menubar = tk.Menu(root)
     menubar.add_command(label="Instructions", command=instruction, font= styleTexto_h3)
-    menubar.add_command(label="About", command=info , font= styleTexto_h3)
-
+    #menubar.add_command(label="About", command=info , font= styleTexto_h3)
     root.config(menu = menubar)
     
     #------------------------------------------ Estilo personalizado para el comboBox -------------------------------------------------------------------------------
@@ -452,7 +452,7 @@ if __name__ == "__main__":
 
 
     downloadAll= Checkbutton(myframe,text="Download all", font=styleTexto_h3, fg=colorTexto,variable=VarDownloadAll, highlightthickness=0, bg= white, compound="left", command=lambda: downloadAllBooks())
-    myTipDownloadAll = Hovertip(downloadAll, 'Download the information \nfor all the books')
+    myTipDownloadAll = Hovertip(downloadAll, 'Download basic book information \nin addition to description, \nups, and availability.')
 
     watchProcess= Checkbutton(myframe,text="Watch process", font=styleTexto_h3, fg=colorTexto,variable=VarWatchProcess, highlightthickness=0, bg= white, compound="left",command=lambda: watchAllProcess())
     myTipWatchProcess = Hovertip(watchProcess, 'Select only if you want to watch how \nthe program download the information')
