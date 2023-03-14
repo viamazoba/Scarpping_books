@@ -4,6 +4,8 @@ This is a desktop application that uses a graphical interface to perform web scr
 
 This project provides a brief demonstration of the things that can be done through web scraping for information gathering, as well as automation of web processes.
 
+**Note:** The output of this application is a txt file with the requested information in the path where the main.py script was executed.
+
 ## Libraries used
 These are the main libraries used for this project:
 
@@ -14,10 +16,13 @@ These are the main libraries used for this project:
 For more details, please refer to the requirements.txt document.
 
 ## Images
-<img src="./images/carga_info.png" alt="Texto alternativo" width="400"/>
-<img src="./images/principal_screen_1.png" alt="Texto alternativo" width="400"/>
-<img src="./images/principal_screen_2.png" alt="Texto alternativo" width="400"/>
-<img src="./images/instructions.png" alt="Texto alternativo" width="400"/>
+
+<div style="text-align:center;">
+    <img src="./images/carga_info.png" alt="Texto alternativo" width="450"/>
+    <img src="./images/principal_screen_1.png" alt="Texto alternativo" width="450"/>
+    <img src="./images/principal_screen_2.png" alt="Texto alternativo" width="450"/>
+    <img src="./images/instructions.png" alt="Texto alternativo" width="450"/>
+</div>
 
 
 ## Installation
